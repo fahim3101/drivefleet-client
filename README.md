@@ -4,7 +4,7 @@ A modern, full-featured car rental web application that connects car owners with
 
 > **Live Site:** [https://drivefleet-client-nine.vercel.app](https://drivefleet-client-nine.vercel.app/)
 > **Live API:** [https://drivefleet-server-orpin.vercel.app](https://drivefleet-server-orpin.vercel.app/)
-> **Backend Repo:** [`drivefleet-server`](../drivefleet-server) — REST API powering this client.
+> **Backend Repo:** [github.com/fahim3101/drivefleet-server](https://github.com/fahim3101/drivefleet-server) — REST API powering this client.
 
 ---
 
