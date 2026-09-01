@@ -52,6 +52,11 @@ const Navbar = () => {
             </span>
           </NavLink>
           {user && <NavLink to="/add-car" className={linkClass}>Add Car</NavLink>}
+          {user && (
+            <NavLink to="/admin" className={linkClass}>
+              Admin
+            </NavLink>
+          )}
         </div>
 
         {/* Desktop Auth */}
@@ -83,6 +88,10 @@ const Navbar = () => {
                     <Link to="/add-car" onClick={() => setDropdown(false)}
                       className="block px-4 py-2.5 text-sm hover:bg-primary/20 transition-colors">
                       ➕ Add Car
+                    </Link>
+                    <Link to="/admin" onClick={() => setDropdown(false)}
+                      className="block px-4 py-2.5 text-sm hover:bg-primary/20 transition-colors">
+                      📊 Admin Dashboard
                     </Link>
                   </div>
                   <div className="border-t border-white/10 py-1">
@@ -119,6 +128,7 @@ const Navbar = () => {
           {user && (
             <>
               <NavLink to="/add-car" className={linkClass} onClick={() => setMobileOpen(false)}>Add Car</NavLink>
+              <NavLink to="/admin" className={linkClass} onClick={() => setMobileOpen(false)}>Admin</NavLink>
               <NavLink to="/my-bookings" className={linkClass} onClick={() => setMobileOpen(false)}>My Bookings</NavLink>
               <NavLink to="/my-cars" className={linkClass} onClick={() => setMobileOpen(false)}>My Added Cars</NavLink>
               <button onClick={handleLogout} className="text-red-400 font-medium text-left">Logout</button>

@@ -10,6 +10,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 import Wishlist from "../pages/Wishlist";
+import AdminDashboard from "../pages/AdminDashboard";
 import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
@@ -44,6 +45,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <MyBookings />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/admin",
+        element: (
+          <PrivateRoute>
+            <AdminDashboard />
           </PrivateRoute>
         ),
       },
