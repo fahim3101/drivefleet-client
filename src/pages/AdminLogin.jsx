@@ -69,8 +69,8 @@ const AdminLogin = () => {
         <form onSubmit={handleSubmit} className="card-dark p-8 space-y-6">
           <div>
             <label className="text-sm text-gray-400 mb-2 block">Admin Password *</label>
-            <input type="password" className="input-field" placeholder="Enter Admin@123" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <p className="text-xs text-gray-600 mt-2">Hint: Admin@123 (change in server .env ADMIN_PASS)</p>
+            <input type="password" className="input-field" placeholder="Enter admin123" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <p className="text-xs text-gray-600 mt-2">Hint: admin123 (change in server .env ADMIN_PASS)</p>
           </div>
 
           <button type="submit" className="btn-primary w-full py-3.5" disabled={loading}>
@@ -88,7 +88,7 @@ const AdminLogin = () => {
           <p className="font-medium mb-1">How it works:</p>
           <ul className="list-disc list-inside space-y-1 text-xs text-gray-400">
             <li>Step 1: Login with whitelisted email ({adminEmailEnv})</li>
-            <li>Step 2: Enter shared admin password (Admin@123) to get adminToken</li>
+            <li>Step 2: Enter admin password (admin123) to get adminToken</li>
             <li>Step 3: Access /admin stats (requires both)</li>
           </ul>
         </div>
