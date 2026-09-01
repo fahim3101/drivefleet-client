@@ -14,7 +14,7 @@ const CarDetails = () => {
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ driverNeeded: "No", specialNote: "", startDate: "", endDate: "" });
+  const [form, setForm] = useState({ driverNeeded: "No", specialNote: "", startDate: "", endDate: "", paymentMethod: "Bkash" });
   const [booking, setBooking] = useState(false);
 
   useEffect(() => {
@@ -53,7 +53,13 @@ const CarDetails = () => {
       toast.error("End date must be after start date");
       return;
     }
+    if (!form.startDate || !form.endDate) {
+      toast.error("Please select start and end dates");
+      return;
+    }
     setBooking(true);
+    // Mock payment processing delay
+    await new Promise((r) => setTimeout(r, 800));
     try {
       await api.post("/bookings", {
         carId: car._id,
@@ -69,8 +75,11 @@ const CarDetails = () => {
         startDate: form.startDate || undefined,
         endDate: form.endDate || undefined,
         totalPrice,
+        paymentMethod: form.paymentMethod,
+        paymentStatus: "paid",
+        transactionId: `mock_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       });
-      toast.success("🎉 Car booked successfully! Confirmation email sent to " + user.email);
+      toast.success(`🎉 Payment via ${form.paymentMethod} successful! Booking confirmed. Email sent to ${user.email}`);
       setModal(false);
       setCar((prev) => ({ ...prev, bookingCount: (prev.bookingCount || 0) + 1 }));
     } catch (err) {
@@ -210,6 +219,16 @@ const CarDetails = () => {
                   <option value="No">No — I'll drive myself</option>
                   <option value="Yes">Yes — I need a driver (+$20/day)</option>
                 </select>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">Payment Method *</label>
+                <select className="input-field" value={form.paymentMethod} onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}>
+                  <option value="Bkash">bKash (Mock)</option>
+                  <option value="Nagad">Nagad (Mock)</option>
+                  <option value="Card">Card (Mock)</option>
+                  <option value="Cash">Cash on Pickup</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Mock payment — no real money charged. Choose any method.</p>
               </div>
               <div>
                 <label className="text-sm text-gray-400 mb-2 block">Special Note (optional)</label>
