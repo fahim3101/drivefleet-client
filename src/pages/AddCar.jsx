@@ -1,10 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const carTypes = ["SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van"];
+const carTypes = ["SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van", "Electric"];
 
 const AddCar = () => {
   const { user } = useAuth();
@@ -26,24 +26,27 @@ const AddCar = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (Number(form.dailyRentPrice) <= 0) {
+      toast.error("Daily price must be greater than 0");
+      return;
+    }
+    if (Number(form.seatCapacity) < 1) {
+      toast.error("Seat capacity must be at least 1");
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/cars`,
-        {
-          ...form,
-          dailyRentPrice: Number(form.dailyRentPrice),
-          seatCapacity: Number(form.seatCapacity),
-          ownerEmail: user.email,
-          ownerName: user.displayName,
-          ownerPhoto: user.photoURL,
-        },
-        { withCredentials: true }
-      );
+      await api.post("/cars", {
+        ...form,
+        dailyRentPrice: Number(form.dailyRentPrice),
+        seatCapacity: Number(form.seatCapacity),
+        ownerName: user.displayName,
+        ownerPhoto: user.photoURL,
+      });
       toast.success("Car added successfully! 🚗");
       navigate("/my-cars");
-    } catch {
-      toast.error("Failed to add car. Please try again.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add car. Please try again.");
     }
     setLoading(false);
   };

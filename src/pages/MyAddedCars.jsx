@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner";
 import { FaEdit, FaTrash, FaTimes, FaCar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const carTypes = ["SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van"];
+const carTypes = ["SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van", "Electric"];
+const fallbackImg = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600";
 
 const MyAddedCars = () => {
   const { user } = useAuth();
@@ -17,12 +18,10 @@ const MyAddedCars = () => {
   const [saving, setSaving] = useState(false);
 
   const fetchCars = () => {
+    if (!user?.email) return;
     setLoading(true);
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/my-cars`, {
-        params: { email: user.email },
-        withCredentials: true,
-      })
+    api
+      .get("/my-cars", { params: { email: user.email } })
       .then((res) => {
         setCars(res.data);
         setLoading(false);
@@ -32,37 +31,39 @@ const MyAddedCars = () => {
 
   useEffect(() => {
     fetchCars();
-  }, []);
+  }, [user?.email]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (editCar.dailyRentPrice && Number(editCar.dailyRentPrice) <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
     setSaving(true);
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/cars/${editCar._id}`,
-        editCar,
-        { withCredentials: true }
-      );
+      const payload = {
+        ...editCar,
+        dailyRentPrice: Number(editCar.dailyRentPrice),
+        seatCapacity: Number(editCar.seatCapacity),
+      };
+      await api.put(`/cars/${editCar._id}`, payload);
       toast.success("Car updated successfully!");
       setEditCar(null);
       fetchCars();
-    } catch {
-      toast.error("Update failed. Please try again.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Update failed. Please try again.");
     }
     setSaving(false);
   };
 
   const handleDelete = async () => {
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/cars/${deleteId}`,
-        { withCredentials: true }
-      );
+      await api.delete(`/cars/${deleteId}`);
       toast.success("Car deleted successfully!");
       setDeleteId(null);
       fetchCars();
-    } catch {
-      toast.error("Delete failed. Please try again.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Delete failed. Please try again.");
     }
   };
 
@@ -108,9 +109,10 @@ const MyAddedCars = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
-                        src={car.imageUrl}
+                        src={car.imageUrl || fallbackImg}
                         alt={car.carName}
                         className="w-16 h-11 object-cover rounded-lg flex-shrink-0"
+                        onError={(e) => (e.target.src = fallbackImg)}
                       />
                       <div>
                         <p className="font-semibold text-sm">{car.carName}</p>

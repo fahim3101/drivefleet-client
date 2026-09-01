@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axios";
 import CarCard from "../components/CarCard";
 import Spinner from "../components/Spinner";
 import { FaShieldAlt, FaHeadset, FaMapMarked, FaStar, FaChevronRight } from "react-icons/fa";
@@ -10,8 +10,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/cars/latest`)
+    api
+      .get("/cars/latest")
       .then((res) => {
         setCars(res.data);
         setLoading(false);

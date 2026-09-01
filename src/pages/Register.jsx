@@ -35,8 +35,8 @@ const Register = () => {
     try {
       await createUser(form.email, form.password);
       await updateUserProfile(form.name, form.photoUrl);
-      toast.success("Registration successful! Please sign in.");
-      navigate("/login");
+      toast.success("Registration successful! Welcome to DriveFleet 🚗");
+      navigate("/");
     } catch (err) {
       const msg =
         err.code === "auth/email-already-in-use"

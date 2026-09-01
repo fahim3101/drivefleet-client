@@ -9,7 +9,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../firebase/firebase.config";
-import axios from "axios";
+import api from "../api/axios";
 
 const AuthContext = createContext(null);
 const googleProvider = new GoogleAuthProvider();
@@ -28,11 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const logOut = async () => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
+      await api.post("/logout", {});
     } catch {}
     return signOut(auth);
   };
@@ -48,11 +44,7 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       if (currentUser) {
         try {
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/jwt`,
-            { email: currentUser.email },
-            { withCredentials: true }
-          );
+          await api.post("/jwt", { email: currentUser.email });
         } catch {}
       }
       setLoading(false);

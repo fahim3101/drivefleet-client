@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner";
 import { FaTrash, FaCar, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+
+const fallbackImg = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600";
 
 const MyBookings = () => {
   const { user } = useAuth();
@@ -13,12 +15,10 @@ const MyBookings = () => {
   const [deleteId, setDeleteId] = useState(null);
 
   const fetchBookings = () => {
+    if (!user?.email) return;
     setLoading(true);
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/bookings`, {
-        params: { email: user.email },
-        withCredentials: true,
-      })
+    api
+      .get("/bookings", { params: { email: user.email } })
       .then((res) => {
         setBookings(res.data);
         setLoading(false);
@@ -28,19 +28,16 @@ const MyBookings = () => {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [user?.email]);
 
   const handleDelete = async () => {
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/bookings/${deleteId}`,
-        { withCredentials: true }
-      );
+      await api.delete(`/bookings/${deleteId}`);
       toast.success("Booking cancelled successfully!");
       setDeleteId(null);
       fetchBookings();
-    } catch {
-      toast.error("Cancellation failed. Please try again.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Cancellation failed. Please try again.");
     }
   };
 
@@ -69,9 +66,10 @@ const MyBookings = () => {
               {/* Car Image */}
               <div className="relative h-44 overflow-hidden flex-shrink-0">
                 <img
-                  src={b.carImage}
+                  src={b.carImage || fallbackImg}
                   alt={b.carName}
                   className="w-full h-full object-cover"
+                  onError={(e) => (e.target.src = fallbackImg)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <span className="absolute bottom-3 left-3 text-xs bg-primary/90 text-white px-2 py-1 rounded-full font-medium">
@@ -91,13 +89,17 @@ const MyBookings = () => {
                   <div className="flex items-center gap-2 text-gray-400 text-sm">
                     <FaCalendarAlt className="text-primary flex-shrink-0" />
                     <span>
-                      {new Date(b.bookingDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      Booked: {new Date(b.bookingDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                     </span>
                   </div>
+                  {b.startDate && b.endDate && (
+                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <FaCalendarAlt className="text-green-400 flex-shrink-0" />
+                      <span>
+                        {new Date(b.startDate).toLocaleDateString()} → {new Date(b.endDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-between items-center bg-[#0f0f1a] rounded-lg px-4 py-3 mb-4">
@@ -106,8 +108,8 @@ const MyBookings = () => {
                     <p className="text-sm font-medium">{b.driverNeeded}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500">Rate</p>
-                    <p className="text-primary font-bold">${b.dailyRentPrice}/day</p>
+                    <p className="text-xs text-gray-500">{b.totalPrice ? "Total" : "Rate"}</p>
+                    <p className="text-primary font-bold">{b.totalPrice ? `$${b.totalPrice}` : `$${b.dailyRentPrice}/day`}</p>
                   </div>
                 </div>
 
