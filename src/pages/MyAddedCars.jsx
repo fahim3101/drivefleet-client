@@ -104,77 +104,86 @@ const MyAddedCars = () => {
           <Link to="/add-car" className="btn-primary">Add Your First Car</Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-left">
-            <thead className="bg-[#16213E]">
-              <tr className="text-gray-400 text-sm">
-                <th className="px-6 py-4">Car</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4">Price/Day</th>
-                <th className="px-6 py-4">Bookings</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cars.map((car, i) => (
-                <tr
-                  key={car._id}
-                  className={`border-t border-white/5 hover:bg-white/3 transition-colors ${
-                    i % 2 === 0 ? "bg-[#0f0f1a]" : "bg-[#16213E]/30"
-                  }`}
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={car.imageUrl || fallbackImg}
-                        alt={car.carName}
-                        className="w-16 h-11 object-cover rounded-lg flex-shrink-0"
-                        onError={(e) => (e.target.src = fallbackImg)}
-                      />
-                      <div>
-                        <p className="font-semibold text-sm">{car.carName}</p>
-                        <p className="text-gray-500 text-xs">{car.pickupLocation}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-400 text-sm">{car.carType}</td>
-                  <td className="px-6 py-4 text-primary font-bold">${car.dailyRentPrice}</td>
-                  <td className="px-6 py-4 text-gray-300">{car.bookingCount || 0}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium ${
-                        car.availabilityStatus === "Available"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
-                      }`}
-                    >
-                      {car.availabilityStatus}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditCar({ ...car })}
-                        className="p-2.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
-                        title="Edit"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(car._id)}
-                        className="p-2.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full text-left">
+              <thead className="bg-[#16213E]">
+                <tr className="text-gray-400 text-sm">
+                  <th className="px-6 py-4">Car</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Price/Day</th>
+                  <th className="px-6 py-4">Bookings</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {cars.map((car, i) => (
+                  <tr
+                    key={car._id}
+                    className={`border-t border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? "bg-[#0f0f1a]" : "bg-[#16213E]/30"}`}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <img src={car.imageUrl || fallbackImg} alt={car.carName} className="w-16 h-11 object-cover rounded-lg flex-shrink-0" onError={(e) => (e.target.src = fallbackImg)} />
+                        <div>
+                          <p className="font-semibold text-sm">{car.carName}</p>
+                          <p className="text-gray-500 text-xs">{car.pickupLocation}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-400 text-sm">{car.carType}</td>
+                    <td className="px-6 py-4 text-primary font-bold">${car.dailyRentPrice}</td>
+                    <td className="px-6 py-4 text-gray-300">{car.bookingCount || 0}</td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${car.availabilityStatus === "Available" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{car.availabilityStatus}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button onClick={() => setEditCar({ ...car })} className="p-2.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors" title="Edit">
+                          <FaEdit />
+                        </button>
+                        <button onClick={() => setDeleteId(car._id)} className="p-2.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors" title="Delete">
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-4">
+            {cars.map((car) => (
+              <div key={car._id} className="card-dark overflow-hidden">
+                <div className="relative h-40">
+                  <img src={car.imageUrl || fallbackImg} alt={car.carName} className="w-full h-full object-cover" onError={(e) => (e.target.src = fallbackImg)} />
+                  <span className={`absolute top-3 left-3 text-xs px-3 py-1 rounded-full font-medium ${car.availabilityStatus === "Available" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>{car.availabilityStatus}</span>
+                  <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">{car.bookingCount || 0} bookings</span>
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold">{car.carName}</h3>
+                    <span className="text-primary font-bold">${car.dailyRentPrice}<span className="text-gray-500 text-xs font-normal">/day</span></span>
+                  </div>
+                  <p className="text-gray-500 text-xs mb-1">{car.carType} • {car.pickupLocation}</p>
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-4">{car.description || "No description"}</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditCar({ ...car })} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-500/20 text-blue-400 rounded-lg font-medium">
+                      <FaEdit /> Edit
+                    </button>
+                    <button onClick={() => setDeleteId(car._id)} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-500/20 text-red-400 rounded-lg font-medium">
+                      <FaTrash /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* ── Edit Modal ─────────────────────────────────── */}
