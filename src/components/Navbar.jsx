@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
-import { FaCar, FaBars, FaTimes } from "react-icons/fa";
+import { FaCar, FaBars, FaTimes, FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
@@ -46,9 +46,12 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-8">
           <NavLink to="/" end className={linkClass}>Home</NavLink>
           <NavLink to="/explore" className={linkClass}>Explore Cars</NavLink>
-          {user && (
-            <NavLink to="/add-car" className={linkClass}>Add Car</NavLink>
-          )}
+          <NavLink to="/wishlist" className={linkClass}>
+            <span className="flex items-center gap-1">
+              <FaHeart className="text-xs" /> Wishlist
+            </span>
+          </NavLink>
+          {user && <NavLink to="/add-car" className={linkClass}>Add Car</NavLink>}
         </div>
 
         {/* Desktop Auth */}
@@ -110,6 +113,9 @@ const Navbar = () => {
         <div className="md:hidden bg-[#16213E] border-t border-white/10 px-4 py-4 flex flex-col gap-4">
           <NavLink to="/" end className={linkClass} onClick={() => setMobileOpen(false)}>Home</NavLink>
           <NavLink to="/explore" className={linkClass} onClick={() => setMobileOpen(false)}>Explore Cars</NavLink>
+          <NavLink to="/wishlist" className={linkClass} onClick={() => setMobileOpen(false)}>
+            Wishlist
+          </NavLink>
           {user && (
             <>
               <NavLink to="/add-car" className={linkClass} onClick={() => setMobileOpen(false)}>Add Car</NavLink>
@@ -118,9 +124,7 @@ const Navbar = () => {
               <button onClick={handleLogout} className="text-red-400 font-medium text-left">Logout</button>
             </>
           )}
-          {!user && (
-            <Link to="/login" className="btn-primary w-fit" onClick={() => setMobileOpen(false)}>Login</Link>
-          )}
+          {!user && <Link to="/login" className="btn-primary w-fit" onClick={() => setMobileOpen(false)}>Login</Link>}
         </div>
       )}
     </nav>

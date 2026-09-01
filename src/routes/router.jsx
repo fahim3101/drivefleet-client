@@ -9,6 +9,7 @@ import MyBookings from "../pages/MyBookings";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
+import Wishlist from "../pages/Wishlist";
 import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "/cars/:id", element: <CarDetails /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
+      { path: "/wishlist", element: <Wishlist /> },
       {
         path: "/add-car",
         element: (
