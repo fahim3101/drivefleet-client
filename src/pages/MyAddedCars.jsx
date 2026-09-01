@@ -3,8 +3,9 @@ import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner";
-import { FaEdit, FaTrash, FaTimes, FaCar } from "react-icons/fa";
+import { FaEdit, FaTrash, FaTimes, FaCar, FaUpload } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { uploadImageToImgBB } from "../utils/imageUpload";
 
 const carTypes = ["SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van", "Electric"];
 const fallbackImg = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600";
@@ -16,6 +17,23 @@ const MyAddedCars = () => {
   const [editCar, setEditCar] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleEditFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    setUploading(true);
+    try {
+      const url = await uploadImageToImgBB(file);
+      setEditCar((prev) => ({ ...prev, imageUrl: url }));
+      toast.success("Image uploaded!");
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const fetchCars = () => {
     if (!user?.email) return;
@@ -183,15 +201,24 @@ const MyAddedCars = () => {
                 />
               </div>
               <div>
-                <label className="text-sm text-gray-400 mb-1.5 block">Image URL</label>
+                <label className="text-sm text-gray-400 mb-1.5 block">Image</label>
+                <div className="flex gap-2 mb-2">
+                  <label className="flex items-center gap-2 px-3 py-2 bg-[#0f0f1a] border border-white/20 rounded-lg text-sm cursor-pointer hover:border-primary/50">
+                    <FaUpload className="text-primary" /> {uploading ? "Uploading..." : "Upload New"}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleEditFileUpload} disabled={uploading} />
+                  </label>
+                  <span className="text-xs text-gray-500 flex items-center">or edit URL</span>
+                </div>
                 <input
                   type="url"
                   className="input-field"
                   value={editCar.imageUrl || ""}
-                  onChange={(e) =>
-                    setEditCar({ ...editCar, imageUrl: e.target.value })
-                  }
+                  onChange={(e) => setEditCar({ ...editCar, imageUrl: e.target.value })}
+                  placeholder="https://..."
                 />
+                {editCar.imageUrl && (
+                  <img src={editCar.imageUrl} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-lg border border-white/10" onError={(e) => (e.target.style.display = "none")} />
+                )}
               </div>
               <div>
                 <label className="text-sm text-gray-400 mb-1.5 block">Pickup Location</label>
