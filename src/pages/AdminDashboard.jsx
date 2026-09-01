@@ -13,7 +13,14 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const isAdminClient = localStorage.getItem("isAdmin") === "true";
+
   useEffect(() => {
+    if (!isAdminClient) {
+      setLoading(false);
+      setError("Admin login required. Please login with admin email/pass.");
+      return;
+    }
     api
       .get("/admin/stats")
       .then((res) => {
@@ -25,14 +32,16 @@ const AdminDashboard = () => {
         setError(msg);
         setLoading(false);
       });
-  }, []);
+  }, [isAdminClient]);
 
   const handleAdminLogout = async () => {
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("adminEmail");
     try {
       await api.post("/admin/logout", {});
-      toast.success("Admin session cleared");
-      navigate("/admin/login");
     } catch {}
+    toast.success("Admin logged out");
+    navigate("/admin/login");
   };
 
   if (loading) return <Spinner />;
