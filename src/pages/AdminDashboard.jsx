@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Spinner from "../components/Spinner";
-import { FaCar, FaCalendarCheck, FaDollarSign, FaCheckCircle, FaTimesCircle, FaChartBar, FaUsers } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaCar, FaCalendarCheck, FaDollarSign, FaCheckCircle, FaTimesCircle, FaChartBar, FaUsers, FaSignOutAlt } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
+import toast from "react-hot-toast";
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,19 +21,46 @@ const AdminDashboard = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.response?.data?.message || "Failed to load stats. Login required.");
+        const msg = err.response?.data?.message || "Failed to load stats.";
+        setError(msg);
         setLoading(false);
       });
   }, []);
+
+  const handleAdminLogout = async () => {
+    try {
+      await api.post("/admin/logout", {});
+      toast.success("Admin session cleared");
+      navigate("/admin/login");
+    } catch {}
+  };
 
   if (loading) return <Spinner />;
   if (error)
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <p className="text-red-400 text-lg mb-4">{error}</p>
-        <Link to="/login" className="btn-primary">
-          Login to view Dashboard
-        </Link>
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FaChartBar className="text-2xl text-red-400" />
+        </div>
+        <p className="text-red-400 text-lg mb-2">{error}</p>
+        <p className="text-gray-500 text-sm mb-6">
+          {error.includes("Admin email") && `Your email: ${user?.email || "not logged in"}`}
+          {error.includes("password") && " Please verify admin password."}
+          {error.includes("Unauthorized") && " Please login first."}
+        </p>
+        <div className="flex gap-3 justify-center">
+          {!user && (
+            <Link to="/login" className="btn-primary">
+              Login
+            </Link>
+          )}
+          <Link to="/admin/login" className="btn-outline">
+            Admin Login
+          </Link>
+          <Link to="/" className="btn-outline">
+            Home
+          </Link>
+        </div>
       </div>
     );
 
@@ -50,7 +81,10 @@ const AdminDashboard = () => {
         <h1 className="text-4xl font-bold mb-3 flex items-center justify-center gap-3">
           <FaChartBar className="text-primary" /> Admin <span className="text-primary">Dashboard</span>
         </h1>
-        <p className="text-gray-400">Overview of your DriveFleet platform</p>
+        <p className="text-gray-400">Overview of your DriveFleet platform — {user?.email}</p>
+        <button onClick={handleAdminLogout} className="mt-4 text-sm text-red-400 hover:text-red-300 flex items-center gap-2 mx-auto">
+          <FaSignOutAlt /> Clear Admin Session
+        </button>
       </div>
 
       {/* Stats Grid */}

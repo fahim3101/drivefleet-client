@@ -14,6 +14,7 @@ const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const Wishlist = lazy(() => import("../pages/Wishlist"));
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
+const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const SuspenseWrapper = ({ children }) => <Suspense fallback={<Spinner />}>{children}</Suspense>;
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
             <SuspenseWrapper><AdminDashboard /></SuspenseWrapper>
           </PrivateRoute>
         ),
+      },
+      {
+        path: "/admin/login",
+        element: <SuspenseWrapper><AdminLogin /></SuspenseWrapper>,
       },
     ],
   },
