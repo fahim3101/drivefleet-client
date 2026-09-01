@@ -6,6 +6,8 @@ A modern, full-featured car rental web application that connects car owners with
 > **Live API:** [https://drivefleet-server-orpin.vercel.app](https://drivefleet-server-orpin.vercel.app/)
 > **Backend Repo:** [github.com/fahim3101/drivefleet-server](https://github.com/fahim3101/drivefleet-server) — REST API powering this client.
 
+> **🆕 MVP Update Sep 2026:** Booking conflict prevention (date overlap), Mock Payment (bKash/Nagad/Card/Cash), Reviews & ratings, Admin Dashboard, Direct image upload (imgbb), Email notifications (Nodemailer mock), Dark/Light theme, Skeleton loaders + retry, SEO meta + code-splitting (React.lazy), Responsive MyAddedCars cards.
+
 ---
 
 ## 📑 Table of Contents
