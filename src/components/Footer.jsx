@@ -10,7 +10,7 @@ const Footer = () => {
         <div>
           <div className="flex items-center gap-2 text-xl font-bold mb-4">
             <FaCar className="text-primary" />
-            <span>Drive<span className="text-primary">Fleet</span></span>
+            <span className="text-white">Drive<span className="text-primary">Fleet</span></span>
           </div>
           <p className="text-gray-500 text-sm leading-relaxed">
             Premium car rental at your fingertips. Explore, book, and drive your dream vehicle today.
