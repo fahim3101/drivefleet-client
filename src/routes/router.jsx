@@ -56,11 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: (
-          <PrivateRoute>
-            <SuspenseWrapper><AdminDashboard /></SuspenseWrapper>
-          </PrivateRoute>
-        ),
+        element: <SuspenseWrapper><AdminDashboard /></SuspenseWrapper>,
       },
       {
         path: "/admin/login",
