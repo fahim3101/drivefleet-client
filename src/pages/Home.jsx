@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import CarCard from "../components/CarCard";
-import Spinner from "../components/Spinner";
+import { CardGridSkeleton } from "../components/Skeleton";
 import { FaShieldAlt, FaHeadset, FaMapMarked, FaStar, FaChevronRight } from "react-icons/fa";
 import { useTheme } from "../providers/ThemeProvider";
 
@@ -10,15 +10,25 @@ const Home = () => {
   const { theme } = useTheme();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
+  const fetchCars = () => {
+    setLoading(true);
+    setError("");
     api
       .get("/cars/latest")
       .then((res) => {
         setCars(res.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setError(err.message || "Failed to load cars");
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchCars();
   }, []);
 
   return (
@@ -91,7 +101,14 @@ const Home = () => {
         </div>
 
         {loading ? (
-          <Spinner />
+          <CardGridSkeleton count={6} />
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-400 mb-4">{error}</p>
+            <button onClick={fetchCars} className="btn-primary">
+              Retry
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cars.map((car) => (

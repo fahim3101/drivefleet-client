@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
-import Spinner from "../components/Spinner";
+import { CardGridSkeleton, TableSkeleton } from "../components/Skeleton";
 import { FaEdit, FaTrash, FaTimes, FaCar, FaUpload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { uploadImageToImgBB } from "../utils/imageUpload";
@@ -14,6 +14,7 @@ const MyAddedCars = () => {
   const { user } = useAuth();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [editCar, setEditCar] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -38,13 +39,17 @@ const MyAddedCars = () => {
   const fetchCars = () => {
     if (!user?.email) return;
     setLoading(true);
+    setError("");
     api
       .get("/my-cars", { params: { email: user.email } })
       .then((res) => {
         setCars(res.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setError(err.response?.data?.message || "Failed to load cars");
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -95,7 +100,21 @@ const MyAddedCars = () => {
       </div>
 
       {loading ? (
-        <Spinner />
+        <>
+          <div className="hidden md:block">
+            <TableSkeleton />
+          </div>
+          <div className="md:hidden">
+            <CardGridSkeleton count={3} />
+          </div>
+        </>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button onClick={fetchCars} className="btn-primary">
+            Retry
+          </button>
+        </div>
       ) : cars.length === 0 ? (
         <div className="text-center py-24">
           <FaCar className="text-6xl text-gray-700 mx-auto mb-4" />

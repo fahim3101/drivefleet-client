@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import CarCard from "../components/CarCard";
-import Spinner from "../components/Spinner";
+import { CardGridSkeleton } from "../components/Skeleton";
 import { FaSearch, FaCar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const carTypes = ["all", "SUV", "Sedan", "Hatchback", "Luxury", "Sports", "Truck", "Van", "Electric"];
@@ -22,6 +22,7 @@ const ExploreCars = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [error, setError] = useState("");
 
   // Debounce search
   useEffect(() => {
@@ -31,11 +32,11 @@ const ExploreCars = () => {
 
   const fetchCars = async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await api.get("/cars", {
         params: { search: debouncedSearch, type, sort, page, limit: 9 },
       });
-      // Server now returns { cars, total, totalPages } but keep compat for array
       if (Array.isArray(res.data)) {
         setCars(res.data);
         setTotal(res.data.length);
@@ -45,8 +46,8 @@ const ExploreCars = () => {
         setTotal(res.data.total || 0);
         setTotalPages(res.data.totalPages || 1);
       }
-    } catch {
-      // handled by interceptor
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load cars");
     } finally {
       setLoading(false);
     }
@@ -106,7 +107,14 @@ const ExploreCars = () => {
       )}
 
       {loading ? (
-        <Spinner />
+        <CardGridSkeleton count={9} />
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button onClick={fetchCars} className="btn-primary">
+            Retry
+          </button>
+        </div>
       ) : cars.length === 0 ? (
         <div className="text-center py-24">
           <FaCar className="text-6xl text-gray-700 mx-auto mb-4" />

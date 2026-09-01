@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
-import Spinner from "../components/Spinner";
+import { CardGridSkeleton } from "../components/Skeleton";
 import { FaTrash, FaCar, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -12,18 +12,23 @@ const MyBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [deleteId, setDeleteId] = useState(null);
 
   const fetchBookings = () => {
     if (!user?.email) return;
     setLoading(true);
+    setError("");
     api
       .get("/bookings", { params: { email: user.email } })
       .then((res) => {
         setBookings(res.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setError(err.response?.data?.message || "Failed to load bookings");
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -51,7 +56,14 @@ const MyBookings = () => {
       </div>
 
       {loading ? (
-        <Spinner />
+        <CardGridSkeleton count={3} />
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button onClick={fetchBookings} className="btn-primary">
+            Retry
+          </button>
+        </div>
       ) : bookings.length === 0 ? (
         <div className="text-center py-24">
           <FaCar className="text-6xl text-gray-700 mx-auto mb-4" />
