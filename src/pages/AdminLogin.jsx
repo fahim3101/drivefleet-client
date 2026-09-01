@@ -9,12 +9,12 @@ const AdminLogin = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const [directEmail, setDirectEmail] = useState("admin@gmail.com");
+  const [directEmail, setDirectEmail] = useState("fr87817833@gmail.com");
   const [directPass, setDirectPass] = useState("");
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("direct"); // direct | firebase
 
-  const adminEmailEnv = import.meta.env.VITE_ADMIN_EMAIL || "admin@gmail.com";
+  const adminEmailEnv = import.meta.env.VITE_ADMIN_EMAIL || "fr87817833@gmail.com";
   const allowedEmails = adminEmailEnv.split(",").map((e) => e.trim().toLowerCase());
   const isWhitelisted = user && allowedEmails.includes(user.email?.toLowerCase());
 
@@ -78,11 +78,11 @@ const AdminLogin = () => {
         {mode === "direct" ? (
           <form onSubmit={handleDirectSubmit} className="card-dark p-8 space-y-5">
             <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-xs text-green-400">
-              ✅ Firebase lagbe na — সরাসরি <b>admin@gmail.com / admin123</b> দিয়ে login
+              ✅ Firebase lagbe na — সরাসরি <b>fr87817833@gmail.com / admin123</b> দিয়ে login
             </div>
             <div>
               <label className="text-sm text-gray-400 mb-2 block">Admin Email *</label>
-              <input type="email" className="input-field" value={directEmail} onChange={(e) => setDirectEmail(e.target.value)} required placeholder="admin@gmail.com" />
+              <input type="email" className="input-field" value={directEmail} onChange={(e) => setDirectEmail(e.target.value)} required placeholder="fr87817833@gmail.com" />
             </div>
             <div>
               <label className="text-sm text-gray-400 mb-2 block">Admin Password *</label>
