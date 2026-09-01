@@ -1,34 +1,39 @@
 import { createBrowserRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import MainLayout from "../layouts/MainLayout";
-import Home from "../pages/Home";
-import ExploreCars from "../pages/ExploreCars";
-import CarDetails from "../pages/CarDetails";
-import AddCar from "../pages/AddCar";
-import MyAddedCars from "../pages/MyAddedCars";
-import MyBookings from "../pages/MyBookings";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import NotFound from "../pages/NotFound";
-import Wishlist from "../pages/Wishlist";
-import AdminDashboard from "../pages/AdminDashboard";
 import PrivateRoute from "./PrivateRoute";
+import Spinner from "../components/Spinner";
+
+const Home = lazy(() => import("../pages/Home"));
+const ExploreCars = lazy(() => import("../pages/ExploreCars"));
+const CarDetails = lazy(() => import("../pages/CarDetails"));
+const AddCar = lazy(() => import("../pages/AddCar"));
+const MyAddedCars = lazy(() => import("../pages/MyAddedCars"));
+const MyBookings = lazy(() => import("../pages/MyBookings"));
+const Login = lazy(() => import("../pages/Login"));
+const Register = lazy(() => import("../pages/Register"));
+const Wishlist = lazy(() => import("../pages/Wishlist"));
+const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
+const NotFound = lazy(() => import("../pages/NotFound"));
+
+const SuspenseWrapper = ({ children }) => <Suspense fallback={<Spinner />}>{children}</Suspense>;
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/explore", element: <ExploreCars /> },
-      { path: "/cars/:id", element: <CarDetails /> },
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
-      { path: "/wishlist", element: <Wishlist /> },
+      { path: "/", element: <SuspenseWrapper><Home /></SuspenseWrapper> },
+      { path: "/explore", element: <SuspenseWrapper><ExploreCars /></SuspenseWrapper> },
+      { path: "/cars/:id", element: <SuspenseWrapper><CarDetails /></SuspenseWrapper> },
+      { path: "/login", element: <SuspenseWrapper><Login /></SuspenseWrapper> },
+      { path: "/register", element: <SuspenseWrapper><Register /></SuspenseWrapper> },
+      { path: "/wishlist", element: <SuspenseWrapper><Wishlist /></SuspenseWrapper> },
       {
         path: "/add-car",
         element: (
           <PrivateRoute>
-            <AddCar />
+            <SuspenseWrapper><AddCar /></SuspenseWrapper>
           </PrivateRoute>
         ),
       },
@@ -36,7 +41,7 @@ const router = createBrowserRouter([
         path: "/my-cars",
         element: (
           <PrivateRoute>
-            <MyAddedCars />
+            <SuspenseWrapper><MyAddedCars /></SuspenseWrapper>
           </PrivateRoute>
         ),
       },
@@ -44,7 +49,7 @@ const router = createBrowserRouter([
         path: "/my-bookings",
         element: (
           <PrivateRoute>
-            <MyBookings />
+            <SuspenseWrapper><MyBookings /></SuspenseWrapper>
           </PrivateRoute>
         ),
       },
@@ -52,13 +57,13 @@ const router = createBrowserRouter([
         path: "/admin",
         element: (
           <PrivateRoute>
-            <AdminDashboard />
+            <SuspenseWrapper><AdminDashboard /></SuspenseWrapper>
           </PrivateRoute>
         ),
       },
     ],
   },
-  { path: "*", element: <NotFound /> },
+  { path: "*", element: <SuspenseWrapper><NotFound /></SuspenseWrapper> },
 ]);
 
 export default router;
