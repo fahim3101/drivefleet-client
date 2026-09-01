@@ -4,8 +4,10 @@ import api from "../api/axios";
 import CarCard from "../components/CarCard";
 import Spinner from "../components/Spinner";
 import { FaShieldAlt, FaHeadset, FaMapMarked, FaStar, FaChevronRight } from "react-icons/fa";
+import { useTheme } from "../providers/ThemeProvider";
 
 const Home = () => {
+  const { theme } = useTheme();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,13 +43,13 @@ const Home = () => {
             Premium Car Rental Platform
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
-            Drive Your{" "}
-            <span className="text-primary">Dream</span>
-            <br />Car Today
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight text-white">
+            Drive Your <span className="text-primary">Dream</span>
+            <br />
+            <span className="text-white">Car Today</span>
           </h1>
 
-          <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
             Explore hundreds of premium vehicles. Book instantly, drive confidently.
             Your perfect ride is just a click away.
           </p>
@@ -70,7 +72,7 @@ const Home = () => {
             ].map(([num, label]) => (
               <div key={label} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary">{num}</div>
-                <div className="text-gray-500 text-sm mt-1">{label}</div>
+                <div className="text-gray-300 text-sm mt-1">{label}</div>
               </div>
             ))}
           </div>
@@ -106,13 +108,13 @@ const Home = () => {
       </section>
 
       {/* ── Why Choose Us ────────────────────────────────── */}
-      <section className="bg-[#16213E]/40 py-20 border-y border-white/5">
+      <section className={theme === "light" ? "bg-white py-20 border-y border-slate-200" : "bg-[#16213E]/40 py-20 border-y border-white/5"}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === "light" ? "text-slate-900" : "text-white"}`}>
               Why Choose <span className="text-primary">DriveFleet</span>
             </h2>
-            <p className="text-gray-400">We offer more than just a car rental service</p>
+            <p className={theme === "light" ? "text-slate-600" : "text-gray-400"}>We offer more than just a car rental service</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -137,8 +139,8 @@ const Home = () => {
                 <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
                   <Icon className="text-3xl text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{title}</h3>
-                <p className="text-gray-400 leading-relaxed">{desc}</p>
+                <h3 className={`text-xl font-semibold mb-3 ${theme === "light" ? "text-slate-900" : "text-white"}`}>{title}</h3>
+                <p className={theme === "light" ? "text-slate-600 leading-relaxed" : "text-gray-400 leading-relaxed"}>{desc}</p>
               </div>
             ))}
           </div>
@@ -148,10 +150,10 @@ const Home = () => {
       {/* ── Testimonials ─────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === "light" ? "text-slate-900" : "text-white"}`}>
             What Our <span className="text-primary">Clients Say</span>
           </h2>
-          <p className="text-gray-400">Thousands of happy customers trust DriveFleet</p>
+          <p className={theme === "light" ? "text-slate-600" : "text-gray-400"}>Thousands of happy customers trust DriveFleet</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -186,12 +188,12 @@ const Home = () => {
                     <FaStar key={i} className="text-yellow-400 text-sm" />
                   ))}
               </div>
-              <p className="text-gray-300 mb-5 leading-relaxed text-sm italic">"{text}"</p>
+              <p className={`mb-5 leading-relaxed text-sm italic ${theme === "light" ? "text-slate-700" : "text-gray-300"}`}>"{text}"</p>
               <div className="flex items-center gap-3">
                 <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover border-2 border-primary/30" />
                 <div>
-                  <div className="font-semibold text-sm">{name}</div>
-                  <div className="text-gray-500 text-xs">{role}</div>
+                  <div className={`font-semibold text-sm ${theme === "light" ? "text-slate-900" : "text-white"}`}>{name}</div>
+                  <div className={theme === "light" ? "text-slate-500 text-xs" : "text-gray-500 text-xs"}>{role}</div>
                 </div>
               </div>
             </div>
@@ -200,14 +202,10 @@ const Home = () => {
       </section>
 
       {/* ── CTA Banner ───────────────────────────────────── */}
-      <section className="bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-y border-primary/20 py-16">
+      <section className={theme === "light" ? "bg-gradient-to-r from-red-50 via-red-100/50 to-red-50 border-y border-red-200 py-16" : "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-y border-primary/20 py-16"}>
         <div className="max-w-3xl mx-auto text-center px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Hit the Road?
-          </h2>
-          <p className="text-gray-400 mb-8 text-lg">
-            Join thousands of satisfied customers and book your dream car today.
-          </p>
+          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === "light" ? "text-slate-900" : "text-white"}`}>Ready to Hit the Road?</h2>
+          <p className={`mb-8 text-lg ${theme === "light" ? "text-slate-600" : "text-gray-400"}`}>Join thousands of satisfied customers and book your dream car today.</p>
           <Link to="/explore" className="btn-primary text-lg px-12 py-4">
             Get Started Now
           </Link>
