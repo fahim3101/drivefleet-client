@@ -11,7 +11,9 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+  const adminEmailEnv = import.meta.env.VITE_ADMIN_EMAIL || "";
+  const allowedEmails = adminEmailEnv.split(",").map((e) => e.trim().toLowerCase());
+  const isWhitelisted = user && allowedEmails.includes(user.email?.toLowerCase());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,8 +22,8 @@ const AdminLogin = () => {
       navigate("/login");
       return;
     }
-    if (user.email !== adminEmail) {
-      toast.error(`Access denied. Admin email is ${adminEmail}`);
+    if (!isWhitelisted) {
+      toast.error(`Access denied. Allowed: ${adminEmailEnv}`);
       return;
     }
     setLoading(true);
@@ -61,7 +63,7 @@ const AdminLogin = () => {
           <p className="text-gray-400 text-sm">
             Logged in as <span className="text-primary font-medium">{user.email}</span>
           </p>
-          {user.email !== adminEmail && <p className="text-red-400 text-xs mt-2">⚠️ This email is not whitelisted. Admin email: {adminEmail}</p>}
+          {!isWhitelisted && <p className="text-red-400 text-xs mt-2">⚠️ Not whitelisted. Allowed: {adminEmailEnv}</p>}
         </div>
 
         <form onSubmit={handleSubmit} className="card-dark p-8 space-y-6">
@@ -85,8 +87,8 @@ const AdminLogin = () => {
         <div className="mt-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-sm text-yellow-400">
           <p className="font-medium mb-1">How it works:</p>
           <ul className="list-disc list-inside space-y-1 text-xs text-gray-400">
-            <li>Step 1: Login with whitelisted email ({adminEmail})</li>
-            <li>Step 2: Enter admin password to get adminToken cookie</li>
+            <li>Step 1: Login with whitelisted email ({adminEmailEnv})</li>
+            <li>Step 2: Enter shared admin password (Admin@123) to get adminToken</li>
             <li>Step 3: Access /admin stats (requires both)</li>
           </ul>
         </div>
