@@ -33,7 +33,7 @@ const MyBookings = () => {
   const handleDelete = async () => {
     try {
       await api.delete(`/bookings/${deleteId}`);
-      toast.success("Booking cancelled successfully!");
+      toast.success("Booking cancelled! Cancellation email sent.");
       setDeleteId(null);
       fetchBookings();
     } catch (err) {

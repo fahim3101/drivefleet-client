@@ -70,7 +70,7 @@ const CarDetails = () => {
         endDate: form.endDate || undefined,
         totalPrice,
       });
-      toast.success("🎉 Car booked successfully!");
+      toast.success("🎉 Car booked successfully! Confirmation email sent to " + user.email);
       setModal(false);
       setCar((prev) => ({ ...prev, bookingCount: (prev.bookingCount || 0) + 1 }));
     } catch (err) {
