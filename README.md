@@ -1,298 +1,226 @@
-# 🚗 DriveFleet — Premium Car Rental Platform (Client)
+<div align="center">
 
-A modern, full-featured car rental web application that connects car owners with renters. Built with **React 18**, **Vite**, **Tailwind CSS**, and **Firebase Authentication**, DriveFleet offers a seamless, secure, and responsive experience for browsing, listing, and booking vehicles.
+# 🚗 DriveFleet — Premium Car Rental Platform
 
-> **Live Site:** [https://drivefleet-client-nine.vercel.app](https://drivefleet-client-nine.vercel.app/)
-> **Live API:** [https://drivefleet-server-orpin.vercel.app](https://drivefleet-server-orpin.vercel.app/)
-> **Backend Repo:** [github.com/fahim3101/drivefleet-server](https://github.com/fahim3101/drivefleet-server) — REST API powering this client.
+### *Drive Your Dream Car Today — Book Instantly, Drive Confidently*
 
-> **🆕 MVP Update Sep 2026:** Booking conflict prevention (date overlap), Mock Payment (bKash/Nagad/Card/Cash), Reviews & ratings, Admin Dashboard, Direct image upload (imgbb), Email notifications (Nodemailer mock), Dark/Light theme, Skeleton loaders + retry, SEO meta + code-splitting (React.lazy), Responsive MyAddedCars cards.
+<p>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
+</p>
+
+<p>
+  <a href="https://drivefleet-client-nine.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel" /></a>
+  <a href="https://drivefleet-server-orpin.vercel.app"><img src="https://img.shields.io/badge/Live_API-Running-success?style=for-the-badge&logo=node.js" /></a>
+  <a href="https://github.com/fahim3101/drivefleet-server"><img src="https://img.shields.io/badge/Backend_Repo-Click-24292e?style=for-the-badge&logo=github" /></a>
+</p>
+
+> **🆕 MVP Sep 2026** — Booking conflict prevention • Mock Payment (bKash/Nagad/Card) • Reviews & Ratings • Admin Control Center • Direct Image Upload (imgbb) • Email Notifications • Dark/Light Theme • Skeleton + Retry • SEO + Code-Splitting • Responsive Cards
+
+</div>
 
 ---
 
-## 📑 Table of Contents
+## ✨ Why DriveFleet?
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Available Scripts](#-available-scripts)
-- [Routes & Pages](#-routes--pages)
-- [Authentication Flow](#-authentication-flow)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
+A **marketplace** — not just your cars. Anyone can list, anyone can book. You as **Admin** control everything: remove spam, manage all records.
+
+```
+User A (Owner)  →  Add Car  →  DriveFleet Marketplace  ←  Book  ←  User B (Renter)
+                                         ↕
+                                   Admin Control
+                              (delete any car/booking/review)
+```
 
 ---
 
 ## 🌟 Features
 
-### 🔐 Secure Authentication
-- **Firebase Email/Password** signup & login
-- **Google OAuth** one-click sign-in
-- JWT tokens issued by the backend and stored in **HTTPOnly cookies** — immune to XSS
-- Persistent sessions across reloads with Firebase `onAuthStateChanged`
-- Protected routes via `<PrivateRoute />` wrapper component
+<details open>
+<summary><b>🔐 Authentication — Secure & Seamless</b></summary>
 
-### 🚗 Smart Car Discovery
-- **Live search** by car name (debounced, backed by MongoDB `$regex`)
-- **Filter** by car type — Sedan, SUV, Hatchback, Luxury, Electric, etc.
-- **"Available Cars"** toggle to hide booked-out vehicles
-- Pagination-ready grid of cards with hover animations
+- Email/Password + **Google OAuth** via Firebase
+- JWT in **HTTPOnly, Secure, SameSite=None** cookies — XSS-proof
+- `onAuthStateChanged` persistent session
+- `PrivateRoute` + `verifyToken` gate
+- **Admin gate:** `fr87817833@gmail.com / admin123` at `/admin/login` → `localStorage.isAdmin` + server `adminToken`
 
-### 📋 Complete Booking System
-- Date-picker based booking with instant confirmation
-- Optional **driver inclusion** toggle
-- Special notes field for custom requests
-- "My Bookings" dashboard with one-click cancellation
-- Automatic `bookingCount` increment on the car listing
+</details>
 
-### 🛠️ Car Owner Tools
-- **Add Car** form with image URL, description, pricing, location
-- **Edit** any of your own listings
-- **Delete** with confirmation modal
-- Real-time CRUD against the backend (no full page reload)
+<details open>
+<summary><b>🚗 Discovery — Fast & Smart</b></summary>
 
-### 🎨 Polished UI / UX
-- **Custom dark theme** — slate/black with vibrant accents
-- Fully **responsive** — mobile, tablet, desktop breakpoints
-- **React Hot Toast** for non-blocking notifications
-- **React Icons** (Feather/Heroicons set) for crisp iconography
-- Smooth **page transitions** and skeleton loaders via `<Spinner />`
+- **Debounced search** (500ms) on `carName` — MongoDB `$regex`
+- **Filters:** Type (SUV/Sedan/Luxury/Electric...), Sort (newest/price_low/price_high/popular), Pagination (9/page)
+- **Image fallback** + **lazy loading** + **Wishlist** (localStorage ❤️)
+- `CarCard` hover scale + status badge + booking count
+
+</details>
+
+<details open>
+<summary><b>📅 Booking — Real Business Logic</b></summary>
+
+- **Date range** required, `calcDays()` total price
+- **Driver toggle** (+$20/day)
+- **Payment mock** — Bkash/Nagad/Card/Cash → `paymentStatus: paid` + `transactionId: mock_*`
+- **Conflict prevention** — server checks overlapping `startDate/endDate` for same `carId` (409 if booked)
+- `bookingCount` atomic `$inc` + decrement on cancel
+- **Email** mock → `fr87817833@gmail.com` gets confirmation (Nodemailer / console)
+
+</details>
+
+<details open>
+<summary><b>🛠️ Owner Tools</b></summary>
+
+- **Add Car** — file upload via **imgbb** (`VITE_IMGBB_API_KEY`) or URL, preview, validation (`price>0`, `seats 1-50`)
+- **My Added Cars** — desktop table + mobile cards (responsive), Edit modal (image upload), Delete confirm
+- **My Bookings** — grid with dates, total, driver, notes, cancel
+
+</details>
+
+<details open>
+<summary><b>⭐ Reviews & Social Proof</b></summary>
+
+- `POST /reviews` 1-5 ★ + comment, `GET /reviews/:carId` avg rating
+- Owner star display uses real `avgRating` (fallback booking count)
+- Delete own review
+
+</details>
+
+<details open>
+<summary><b>👑 Admin Control Center — Beautiful Tabs</b></summary>
+
+- **Overview:** 6 stat cards (Total Cars, Available, Unavailable, Bookings, Revenue, Types) + Cars by Type + Monthly chart + Recent
+- **All Cars:** Search + list with `View` (new tab) / `Toggle` availability / `Delete` any car + cleanup bookings/reviews
+- **All Bookings:** Table with user, dates, total, delete any
+- **Reviews:** List with delete
+- **Users:** Distinct emails with car/booking/review counts (spam >5 = red)
+- Access: `/admin/login` → `fr87817833@gmail.com / admin123` → `isAdmin` + server cookies
+
+</details>
+
+<details open>
+<summary><b>🎨 UI/UX — Production Grade</b></summary>
+
+- **Dark/Light** toggle (`ThemeProvider`, `localStorage.theme`, `html.light` overrides) — hero stays dark for contrast
+- **Skeleton loaders** (`CardGridSkeleton`, `TableSkeleton`) + **Retry** on error
+- **Responsive:** Mobile cards for `MyAddedCars`, `Explore` filters stack
+- **Toasts** (react-hot-toast), **Icons** (react-icons), **404** `vercel.json` SPA rewrite
+
+</details>
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology                                      |
-| ---------------- | ----------------------------------------------- |
-| **Framework**    | React 18 (Hooks, Context API)                   |
-| **Build Tool**   | Vite 5 (HMR, ESBuild)                           |
-| **Styling**      | Tailwind CSS 3 + PostCSS                        |
-| **Routing**      | React Router DOM 6                              |
-| **HTTP Client**  | Axios (with `withCredentials: true`)            |
-| **Auth**         | Firebase Authentication                         |
-| **State**        | React Context (`AuthProvider`)                  |
-| **Notifications**| React Hot Toast                                 |
-| **Icons**        | React Icons                                     |
-| **Linting**      | ESLint + React Hooks plugin                     |
+| Layer | Tech |
+|-------|------|
+| **Framework** | React 18 + Vite 5 + React Router 6 |
+| **Styling** | Tailwind CSS 3 + PostCSS + Poppins |
+| **State** | Context API (`AuthProvider`, `ThemeProvider`) |
+| **HTTP** | Axios instance `api/axios.js` (`withCredentials`, 401 interceptor) |
+| **Auth** | Firebase, JWT (7d) |
+| **Upload** | imgbb API (`utils/imageUpload.js`) |
+| **Deploy** | Vercel — `vercel.json` rewrites SPA |
 
 ---
 
-## 📁 Project Structure
+## 📁 Structure
 
 ```
-drivefleet-client/
-├── public/
-├── src/
-│   ├── components/         # Reusable UI (CarCard, Navbar, Footer, Spinner)
-│   ├── firebase/           # firebase.config.js
-│   ├── layouts/            # MainLayout (Navbar + Footer wrapper)
-│   ├── pages/              # Route-level components
-│   │   ├── Home.jsx
-│   │   ├── ExploreCars.jsx
-│   │   ├── CarDetails.jsx
-│   │   ├── AddCar.jsx
-│   │   ├── MyAddedCars.jsx
-│   │   ├── MyBookings.jsx
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   └── NotFound.jsx
-│   ├── providers/          # AuthProvider.jsx — global auth state
-│   ├── routes/             # router.jsx + PrivateRoute.jsx
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css           # Tailwind directives + global styles
-├── .env.example
-├── index.html
-├── tailwind.config.js
-├── postcss.config.js
-├── vite.config.js
-└── package.json
+src/
+├── api/axios.js              # instance + interceptor
+├── components/  CarCard, Navbar, Footer, Spinner, Skeleton
+├── firebase/    firebase.config.js
+├── layouts/     MainLayout
+├── pages/       Home, ExploreCars, CarDetails (+Reviews+Payment), AddCar, MyAddedCars, MyBookings, Wishlist, AdminDashboard, AdminLogin, Login, Register, NotFound
+├── providers/   AuthProvider, ThemeProvider
+├── routes/      router.jsx (React.lazy + Suspense) + PrivateRoute
+├── utils/       imageUpload.js
+└── index.css    # dark + html.light overrides
 ```
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** ≥ 18
-- **npm** ≥ 9 (or pnpm / yarn)
-- A **Firebase** project (free tier is fine)
-- The `drivefleet-server` running locally or deployed
-
-### Installation
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/fahim3101/drivefleet-client.git
 cd drivefleet-client
-
-# 2. Install dependencies
 npm install
-
-# 3. Configure environment
-cp .env.example .env
-# then fill in the values (see below)
-
-# 4. Start the dev server
-npm run dev
+cp .env.example .env   # fill below
+npm run dev            # http://localhost:5173
 ```
 
-The app will start on **http://localhost:5173** by default.
+**Test admin:** `fr87817833@gmail.com / admin123` at `/admin/login` (direct, no Firebase needed)
 
 ---
 
-## 🔑 Environment Variables
-
-Create a `.env` file in the project root (never commit this file):
+## 🔑 Env Vars
 
 ```env
-# Firebase Web SDK config (from Firebase Console → Project Settings)
+# Firebase (Project Settings)
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
 VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
-
-# Backend API base URL
 VITE_API_URL=http://localhost:5000
+VITE_IMGBB_API_KEY= # https://api.imgbb.com/
+VITE_ADMIN_EMAIL=fr87817833@gmail.com
 ```
 
-> ⚠️ All client-side env vars must be prefixed with `VITE_` to be exposed to the browser by Vite.
+---
+
+## 🗺️ Routes
+
+| Path | Access | Description |
+|------|--------|-------------|
+| `/` | Public | Hero + 6 latest + Why Choose + Testimonials |
+| `/explore` | Public | Search, filter, sort, pagination |
+| `/cars/:id` | Public | Details + date+payment booking + reviews |
+| `/wishlist` | Public | localStorage |
+| `/add-car` | 🔒 | Image upload + validation |
+| `/my-cars` | 🔒 | Manage own |
+| `/my-bookings` | 🔒 | Cancel |
+| `/admin` | 👑 | Control Center (tabs) |
+| `/admin/login` | Public | fr87817833@gmail.com / admin123 |
+| `/login` `/register` | Public | Auth |
+| `*` | Public | 404 |
 
 ---
 
-## 📜 Available Scripts
-
-| Command           | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `npm run dev`     | Start the Vite dev server with HMR                |
-| `npm run build`   | Build the production bundle into `./dist`         |
-| `npm run preview` | Preview the production build locally              |
-| `npm run lint`    | Run ESLint over all `.js` / `.jsx` files          |
-
----
-
-## 🗺️ Routes & Pages
-
-| Path                   | Page             | Access          | Description                              |
-| ---------------------- | ---------------- | --------------- | ---------------------------------------- |
-| `/`                    | `Home`           | Public          | Landing page with hero + featured cars   |
-| `/cars`                | `ExploreCars`    | Public          | Browse, search & filter all listings     |
-| `/cars/:id`            | `CarDetails`     | Public          | Single car view + booking form           |
-| `/login`               | `Login`          | Public          | Email/password + Google sign-in          |
-| `/register`            | `Register`       | Public          | Create a new account                     |
-| `/add-car`             | `AddCar`         | 🔒 Private      | List a new car for rent                  |
-| `/my-cars`             | `MyAddedCars`    | 🔒 Private      | Manage your own listings                 |
-| `/my-bookings`         | `MyBookings`     | 🔒 Private      | View / cancel your bookings              |
-| `*`                    | `NotFound`       | Public          | Custom 404 page                          |
-
----
-
-## 🔐 Authentication Flow
+## 🔐 Auth Flow
 
 ```
-┌────────────┐  Firebase sign-in   ┌──────────────┐
-│   User     │ ──────────────────▶ │  Firebase    │ → idToken
-└────────────┘                     └──────────────┘
-       │                                  │
-       │ idToken                          │
-       ▼                                  ▼
-┌──────────────────────────────────────────────────┐
-│   POST /jwt  (sends Firebase idToken)            │
-│   ← Sets HTTPOnly cookie: token=<JWT>            │
-└──────────────────────────────────────────────────┘
-       │
-       │ Every subsequent request → cookie auto-sent
-       ▼
-┌──────────────────────────────────────────────────┐
-│   Axios with { withCredentials: true }           │
-│   → Server reads cookie → verifies JWT → grants  │
-│     access to /my-cars, /bookings, etc.          │
-└──────────────────────────────────────────────────┘
+Firebase Login → POST /jwt {email} → HTTPOnly cookie token (7d) → verifyToken → PrivateRoute
+Direct Admin: POST /admin/direct-login {email, password} → token + adminToken → verifyAdmin
 ```
 
-1. User signs in via Firebase (email/password or Google).
-2. Client POSTs the Firebase `idToken` (or just the email) to `POST /jwt`.
-3. Server mints a **7-day JWT** and sets it as an **HTTPOnly**, **Secure**, **SameSite=None** cookie.
-4. Axios is configured globally with `withCredentials: true` so the cookie travels with every API call.
-5. Server-side middleware (`verifyToken`) reads the cookie and gates protected routes.
+---
+
+## ☁️ Deploy (Vercel)
+
+1. Import GitHub repo → Vercel
+2. Add env vars (Production+Preview+Development)
+3. Build: `npm run build` → Output: `dist`
+4. Add `https://drivefleet-client-nine.vercel.app` to server `cors.origin` + Firebase Authorized Domains
+5. `vercel.json` ensures SPA routing
 
 ---
 
-## ☁️ Deployment
+## 📸 Screenshots
 
-This project is deployed on **Vercel**.
-
-### One-time setup
-
-1. Push the repo to GitHub.
-2. Import the project in [Vercel](https://vercel.com/new).
-3. Set the **Root Directory** to `drivefleet-client` (if using a monorepo).
-4. Add every env var from `.env` in **Settings → Environment Variables**.
-5. Deploy 🚀
-
-### Build settings (auto-detected)
-
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
-- **Install Command:** `npm install`
-
-### Post-deploy checklist
-
-- Add your Vercel domain (e.g. `https://drivefleet-client-nine.vercel.app`) to the backend's `corsOptions.origin` allow-list.
-- Update Firebase **Authentication → Authorized Domains** to include your Vercel URL.
+> Hero (dark bg white text) • Explore (debounced) • CarDetails (date+payment+reviews) • Admin Tabs (cars/bookings/users)
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing & License
 
-Contributions are welcome! Please:
+PR welcome — `npm run lint` before push. **MIT** — Made with ❤️ by [Fahim Rana](https://github.com/fahim3101)
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m "feat: add amazing feature"`
-4. Push the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-Please run `npm run lint` before submitting a PR.
-
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-## 🙏 Acknowledgments
-
-- [Vercel](https://vercel.com/) for hosting
-- [Firebase](https://firebase.google.com/) for authentication
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for the database
-- All the open-source maintainers whose libraries made this possible
-
----
-
-## 📬 Contact
-
-Have questions, feedback, or partnership ideas? Reach out:
-
-- 📱 **Phone / WhatsApp:** [+8801818858015](tel:+8801818858015)
-- 📧 **Email:** [fahimrana3101@gmail.com](mailto:fahimrana3101@gmail.com)
-
-## 🌐 Follow Me
-
-Stay connected and follow my journey:
-
-- 💼 **LinkedIn:** [linkedin.com/in/fahim-rana](https://www.linkedin.com/in/fahim-rana/)
-- 📘 **Facebook:** [facebook.com/fahim2855](https://www.facebook.com/fahim2855)
-- 📸 **Instagram:** [instagram.com/_fahiiiim_](https://www.instagram.com/_fahiiiim_/)
-
----
-
-**Made with ❤️ by [Fahim Rana](https://github.com/fahim3101)**
+📧 fahimrana3101@gmail.com | 📱 +8801818858015 | [LinkedIn](https://www.linkedin.com/in/fahim-rana/) | [Facebook](https://www.facebook.com/fahim2855) | [Instagram](https://www.instagram.com/_fahiiiim_/)
