@@ -4,7 +4,7 @@ import api from "../api/axios";
 import { useAuth } from "../providers/AuthProvider";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner";
-import { FaMapMarkerAlt, FaUsers, FaCar, FaStar, FaTimes, FaCheckCircle } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUsers, FaCar, FaStar, FaTimes, FaCheckCircle, FaTrash } from "react-icons/fa";
 
 const fallbackImg = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600";
 
@@ -16,6 +16,11 @@ const CarDetails = () => {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState({ driverNeeded: "No", specialNote: "", startDate: "", endDate: "", paymentMethod: "Bkash" });
   const [booking, setBooking] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(null);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     api
@@ -26,6 +31,53 @@ const CarDetails = () => {
       })
       .catch(() => setLoading(false));
   }, [id]);
+
+  const fetchReviews = () => {
+    api
+      .get(`/reviews/${id}`)
+      .then((res) => {
+        setReviews(res.data.reviews || []);
+        setAvgRating(res.data.avg);
+        setReviewCount(res.data.count || 0);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [id]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) return toast.error("Please login to review");
+    if (!reviewForm.comment.trim()) return toast.error("Please write a comment");
+    setSubmittingReview(true);
+    try {
+      await api.post("/reviews", {
+        carId: id,
+        rating: reviewForm.rating,
+        comment: reviewForm.comment,
+        userName: user.displayName || user.email,
+        userPhoto: user.photoURL || "",
+      });
+      toast.success("Review submitted!");
+      setReviewForm({ rating: 5, comment: "" });
+      fetchReviews();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit review");
+    }
+    setSubmittingReview(false);
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await api.delete(`/reviews/${reviewId}`);
+      toast.success("Review deleted");
+      fetchReviews();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Delete failed");
+    }
+  };
 
   const calcDays = () => {
     if (!form.startDate || !form.endDate) return 1;
@@ -58,7 +110,6 @@ const CarDetails = () => {
       return;
     }
     setBooking(true);
-    // Mock payment processing delay
     await new Promise((r) => setTimeout(r, 800));
     try {
       await api.post("/bookings", {
@@ -104,12 +155,7 @@ const CarDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <div className="rounded-2xl overflow-hidden border border-white/10 h-80">
-            <img
-              src={car.imageUrl || fallbackImg}
-              alt={car.carName}
-              className="w-full h-full object-cover"
-              onError={(e) => (e.target.src = fallbackImg)}
-            />
+            <img src={car.imageUrl || fallbackImg} alt={car.carName} className="w-full h-full object-cover" onError={(e) => (e.target.src = fallbackImg)} />
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3">
             {["Air Conditioning", "GPS Navigation", "Bluetooth Audio", "USB Charging"].map((f) => (
@@ -124,9 +170,7 @@ const CarDetails = () => {
         <div>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-xs text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">{car.carType}</span>
-            <span className={`text-xs px-3 py-1 rounded-full font-medium ${car.availabilityStatus === "Available" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-              {car.availabilityStatus}
-            </span>
+            <span className={`text-xs px-3 py-1 rounded-full font-medium ${car.availabilityStatus === "Available" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{car.availabilityStatus}</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold mb-2">{car.carName}</h1>
@@ -135,9 +179,11 @@ const CarDetails = () => {
             {Array(5)
               .fill(0)
               .map((_, i) => (
-                <FaStar key={i} className="text-sm" />
+                <FaStar key={i} className={`text-sm ${avgRating && i < Math.round(avgRating) ? "" : "opacity-30"}`} />
               ))}
-            <span className="text-gray-400 text-sm ml-2">({car.bookingCount || 0} bookings)</span>
+            <span className="text-gray-400 text-sm ml-2">
+              {avgRating ? `${avgRating} (${reviewCount} reviews)` : `${car.bookingCount || 0} bookings`}
+            </span>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -178,12 +224,87 @@ const CarDetails = () => {
                 setModal(true);
               }}
               disabled={car.availabilityStatus !== "Available"}
-              className={`w-full py-4 rounded-xl text-lg font-semibold transition-all ${
-                car.availabilityStatus === "Available" ? "bg-primary hover:bg-red-700 text-white" : "bg-gray-700 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-4 rounded-xl text-lg font-semibold transition-all ${car.availabilityStatus === "Available" ? "bg-primary hover:bg-red-700 text-white" : "bg-gray-700 text-gray-500 cursor-not-allowed"}`}
             >
               {car.availabilityStatus === "Available" ? "Book Now" : "Currently Unavailable"}
             </button>
+          )}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-16 border-t border-white/10 pt-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <FaStar className="text-yellow-400" /> Reviews {avgRating && <span className="text-primary">({avgRating}★)</span>}
+            <span className="text-gray-500 text-sm font-normal">{reviewCount} reviews</span>
+          </h2>
+        </div>
+
+        {/* Review Form */}
+        {user ? (
+          <form onSubmit={handleReviewSubmit} className="card-dark p-6 mb-8">
+            <h3 className="font-semibold mb-4">Write a Review</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-sm text-gray-400">Rating:</span>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} type="button" onClick={() => setReviewForm({ ...reviewForm, rating: n })} className={n <= reviewForm.rating ? "text-yellow-400" : "text-gray-600"}>
+                  <FaStar />
+                </button>
+              ))}
+              <span className="text-sm text-primary ml-2">{reviewForm.rating} / 5</span>
+            </div>
+            <textarea
+              className="input-field resize-none"
+              rows={3}
+              placeholder="Share your experience with this car..."
+              value={reviewForm.comment}
+              onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+              required
+            />
+            <button type="submit" className="btn-primary mt-4" disabled={submittingReview}>
+              {submittingReview ? "Submitting..." : "Submit Review"}
+            </button>
+          </form>
+        ) : (
+          <div className="card-dark p-6 mb-8 text-center text-gray-400">
+            <p>Please <Link to="/login" className="text-primary hover:underline">login</Link> to write a review.</p>
+          </div>
+        )}
+
+        {/* Reviews List */}
+        <div className="space-y-4">
+          {reviews.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">No reviews yet. Be the first to review!</p>
+          ) : (
+            reviews.map((r) => (
+              <div key={r._id} className="card-dark p-5">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <img src={r.userPhoto || "https://i.ibb.co/MBtjqXQ/no-avatar.gif"} alt={r.userName} className="w-9 h-9 rounded-full object-cover border border-white/10" />
+                    <div>
+                      <p className="font-semibold text-sm">{r.userName}</p>
+                      <p className="text-gray-500 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-0.5 text-yellow-400 text-xs">
+                      {Array(r.rating)
+                        .fill(0)
+                        .map((_, i) => (
+                          <FaStar key={i} />
+                        ))}
+                    </div>
+                    {user?.email === r.userEmail && (
+                      <button onClick={() => handleDeleteReview(r._id)} className="text-red-400 hover:text-red-300 p-1" title="Delete review">
+                        <FaTrash className="text-xs" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">{r.comment}</p>
+              </div>
+            ))
           )}
         </div>
       </div>
